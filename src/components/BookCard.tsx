@@ -6,16 +6,23 @@ import StarRating from '@/components/StarRating'
 import ProgressBar from '@/components/ProgressBar'
 import { Badge } from '@/components/ui/badge'
 import EditBookDialog from '@/components/EditBookDialog'
-import { Edit } from 'lucide-react'
+import { Edit, Trash2 } from 'lucide-react'
 
 interface BookCardProps {
   book: Book
   onUpdateBook?: (bookId: string, updates: Partial<Book>) => void
+  onDeleteBook?: (bookId: string) => void
   compact?: boolean
 }
 
-export default function BookCard({ book, onUpdateBook, compact = false }: BookCardProps) {
+export default function BookCard({ book, onUpdateBook, onDeleteBook, compact = false }: BookCardProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  const handleDeleteClick = () => {
+    if (window.confirm(`Are you sure you want to delete "${book.title}"? This action cannot be undone.`)) {
+      onDeleteBook?.(book.id)
+    }
+  }
 
   const statusColors = {
     'Reading': 'bg-blue-100 text-blue-800 border-blue-200',
@@ -57,17 +64,30 @@ export default function BookCard({ book, onUpdateBook, compact = false }: BookCa
                 <Badge className={statusColors[book.status]} variant="outline">
                   {book.status}
                 </Badge>
-                {onUpdateBook && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    onClick={() => setIsEditDialogOpen(true)}
-                    title="Edit book"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                )}
+                <div className="flex items-center space-x-1">
+                  {onUpdateBook && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={() => setIsEditDialogOpen(true)}
+                      title="Edit book"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {onDeleteBook && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                      onClick={handleDeleteClick}
+                      title="Delete book"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </CardHeader>

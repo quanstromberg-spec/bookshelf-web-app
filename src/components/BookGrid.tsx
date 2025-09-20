@@ -5,9 +5,10 @@ import { BookX } from 'lucide-react'
 interface BookGridProps {
   books: Book[]
   onUpdateBook: (bookId: string, updates: Partial<Book>) => void
+  onDeleteBook?: (bookId: string) => void
 }
 
-export default function BookGrid({ books, onUpdateBook }: BookGridProps) {
+export default function BookGrid({ books, onUpdateBook, onDeleteBook }: BookGridProps) {
   if (books.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -27,6 +28,7 @@ export default function BookGrid({ books, onUpdateBook }: BookGridProps) {
           key={book.id}
           book={book}
           onUpdateBook={onUpdateBook}
+          onDeleteBook={onDeleteBook}
         />
       ))}
     </div>

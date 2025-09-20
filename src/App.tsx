@@ -102,6 +102,10 @@ function App() {
     }))
   }
 
+  const handleDeleteBook = (bookId: string) => {
+    setBooks(prev => prev.filter(book => book.id !== bookId))
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar
@@ -115,6 +119,7 @@ function App() {
           <CurrentlyReading
             books={currentlyReadingBooks}
             onUpdateBook={handleUpdateBook}
+            onDeleteBook={handleDeleteBook}
           />
         )}
 
@@ -131,6 +136,7 @@ function App() {
         <BookGrid
           books={filteredBooks}
           onUpdateBook={handleUpdateBook}
+          onDeleteBook={handleDeleteBook}
         />
       </main>
 

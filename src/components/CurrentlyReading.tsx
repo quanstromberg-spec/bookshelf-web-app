@@ -5,9 +5,10 @@ import BookCard from '@/components/BookCard'
 interface CurrentlyReadingProps {
   books: Book[]
   onUpdateBook: (bookId: string, updates: Partial<Book>) => void
+  onDeleteBook?: (bookId: string) => void
 }
 
-export default function CurrentlyReading({ books, onUpdateBook }: CurrentlyReadingProps) {
+export default function CurrentlyReading({ books, onUpdateBook, onDeleteBook }: CurrentlyReadingProps) {
   if (books.length === 0) return null
 
   return (
@@ -24,6 +25,7 @@ export default function CurrentlyReading({ books, onUpdateBook }: CurrentlyReadi
             key={book.id}
             book={book}
             onUpdateBook={onUpdateBook}
+            onDeleteBook={onDeleteBook}
           />
         ))}
       </div>
