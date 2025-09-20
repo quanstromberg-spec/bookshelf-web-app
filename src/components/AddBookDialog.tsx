@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { BookFormData, BookStatus } from '@/types/book'
+import { ReadingList } from '@/types/readingList'
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,8 @@ import StarRating from '@/components/StarRating'
 interface AddBookDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onAddBook: (book: BookFormData) => void
+  onAddBook: (book: BookFormData, listIds: string[]) => Promise<void>
+  readingLists: ReadingList[]
 }
 
 const initialFormData: BookFormData = {
@@ -37,9 +39,11 @@ const initialFormData: BookFormData = {
   progress: 0
 }
 
-export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBookDialogProps) {
+export default function AddBookDialog({ open, onOpenChange, onAddBook, readingLists }: AddBookDialogProps) {
   const [formData, setFormData] = useState<BookFormData>(initialFormData)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedListIds, setSelectedListIds] = useState<string[]>([])
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     if (formData.status === 'Read') {
@@ -49,6 +53,15 @@ export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBook
     }
   }, [formData.status])
 
+  useEffect(() => {
+    if (!open) {
+      setFormData(initialFormData)
+      setSelectedListIds([])
+      setIsSubmitting(false)
+      setSubmitError(null)
+    }
+  }, [open])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -57,12 +70,16 @@ export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBook
     }
 
     setIsSubmitting(true)
+    setSubmitError(null)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      onAddBook(formData)
+      await onAddBook(formData, selectedListIds)
       setFormData(initialFormData)
+      setSelectedListIds([])
       onOpenChange(false)
+    } catch (err: any) {
+      console.error('Error adding book from dialog:', err)
+      setSubmitError(err?.message || 'Failed to add book')
     } finally {
       setIsSubmitting(false)
     }
@@ -70,11 +87,21 @@ export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBook
 
   const handleCancel = () => {
     setFormData(initialFormData)
+    setSelectedListIds([])
+    setSubmitError(null)
     onOpenChange(false)
   }
 
   const updateFormData = (field: keyof BookFormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const toggleListSelection = (listId: string) => {
+    setSelectedListIds(prev =>
+      prev.includes(listId)
+        ? prev.filter(id => id !== listId)
+        : [...prev, listId]
+    )
   }
 
   const isFormValid = formData.title.trim() && formData.author.trim()
@@ -88,6 +115,12 @@ export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBook
             Add a new book to your personal library. Fill in the details below.
           </DialogDescription>
         </DialogHeader>
+
+        {submitError && (
+          <div className="rounded-md bg-red-50 border border-red-100 p-3 text-sm text-red-600">
+            {submitError}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -167,6 +200,35 @@ export default function AddBookDialog({ open, onOpenChange, onAddBook }: AddBook
               interactive
               size="lg"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Select reading lists (optional)</Label>
+            {readingLists.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No reading lists yet. Use "My Reading List" to create one.
+              </p>
+            ) : (
+              <div className="grid gap-2">
+                {readingLists.map((list) => {
+                  const isChecked = selectedListIds.includes(list.id)
+                  return (
+                    <label
+                      key={list.id}
+                      className="flex items-center gap-2 text-sm text-foreground"
+                    >
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border border-input accent-primary"
+                        checked={isChecked}
+                        onChange={() => toggleListSelection(list.id)}
+                      />
+                      <span className="truncate">{list.name}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

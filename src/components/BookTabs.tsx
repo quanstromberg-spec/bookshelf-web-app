@@ -1,13 +1,15 @@
 import { BookFilter } from '@/types/book'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { cn } from '@/lib/utils'
 
 interface BookTabsProps {
   activeFilter: BookFilter
   onFilterChange: (filter: BookFilter) => void
   totalCounts: Record<BookFilter, number>
+  className?: string
 }
 
-export default function BookTabs({ activeFilter, onFilterChange, totalCounts }: BookTabsProps) {
+export default function BookTabs({ activeFilter, onFilterChange, totalCounts, className }: BookTabsProps) {
   const tabs: { label: BookFilter; count: number }[] = [
     { label: 'All Books', count: totalCounts['All Books'] },
     { label: 'Read', count: totalCounts['Read'] },
@@ -15,7 +17,7 @@ export default function BookTabs({ activeFilter, onFilterChange, totalCounts }: 
   ]
 
   return (
-    <div className="mb-6">
+    <div className={cn('mb-6', className)}>
       <Tabs value={activeFilter} onValueChange={(value) => onFilterChange(value as BookFilter)}>
         <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-none lg:inline-flex" style={{ backgroundColor: '#FFE8D9' }}>
           {tabs.map((tab) => (

@@ -51,55 +51,58 @@ export default function BookCard({ book, onUpdateBook, onDeleteBook, compact = f
 
         <div className={compact ? 'flex-1 min-w-0' : 'w-full'}>
           <CardHeader className={compact ? 'pb-2' : 'pb-4'}>
-            <div className="flex items-start justify-between">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-lg leading-tight truncate" title={book.title}>
-                  {book.title}
-                </h3>
-                <p className="text-sm text-muted-foreground mt-1" title={book.author}>
+            <div className="space-y-2 min-w-0">
+              <h3 className="font-semibold text-lg leading-tight truncate" title={book.title}>
+                {book.title}
+              </h3>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-muted-foreground truncate" title={book.author}>
                   by {book.author}
                 </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Badge className={statusColors[book.status]} variant="outline">
-                  {book.status}
-                </Badge>
-                <div className="flex items-center space-x-1">
-                  {onUpdateBook && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={() => setIsEditDialogOpen(true)}
-                      title="Edit book"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {onDeleteBook && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
-                      onClick={handleDeleteClick}
-                      title="Delete book"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+                {(onUpdateBook || onDeleteBook) && (
+                  <div className="flex items-center gap-1 ml-auto">
+                    {onUpdateBook && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={() => setIsEditDialogOpen(true)}
+                        title="Edit book"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {onDeleteBook && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+                        onClick={handleDeleteClick}
+                        title="Delete book"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </CardHeader>
 
           <CardContent className={compact ? 'pt-0' : 'pt-0'}>
             <div className="space-y-3">
-              <StarRating
-                rating={book.rating}
-                onRatingChange={handleRatingChange}
-                interactive={!!onUpdateBook}
-                size={compact ? 'sm' : 'md'}
-              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className={statusColors[book.status]} variant="outline">
+                  {book.status}
+                </Badge>
+                <StarRating
+                  rating={book.rating}
+                  onRatingChange={handleRatingChange}
+                  interactive={!!onUpdateBook}
+                  size={compact ? 'sm' : 'md'}
+                  className="justify-end"
+                />
+              </div>
 
               {book.status === 'Reading' && (
                 <ProgressBar progress={book.progress} />
