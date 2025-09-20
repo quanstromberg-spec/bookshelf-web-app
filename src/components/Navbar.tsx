@@ -1,4 +1,5 @@
-import { Search, Plus } from 'lucide-react'
+import { useState } from 'react'
+import { Search, Plus, X } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
@@ -10,6 +11,20 @@ interface NavbarProps {
 }
 
 export default function Navbar({ searchQuery, onSearchChange, onAddBook, onManageReadingLists }: NavbarProps) {
+  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+
+  const handleToggleMobileSearch = () => {
+    setIsMobileSearchOpen(prev => !prev)
+  }
+
+  const handleCloseMobileSearch = () => {
+    setIsMobileSearchOpen(false)
+  }
+
+  const handleMobileSearchChange = (value: string) => {
+    onSearchChange(value)
+  }
+
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 py-4">
@@ -22,7 +37,7 @@ export default function Navbar({ searchQuery, onSearchChange, onAddBook, onManag
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <div className="relative w-48 sm:w-64">
+            <div className="relative w-48 md:w-64 hidden sm:block">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type="text"
@@ -32,6 +47,17 @@ export default function Navbar({ searchQuery, onSearchChange, onAddBook, onManag
                 className="pl-9 bg-white"
               />
             </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="sm:hidden h-10 w-10 rounded-full border-2 bg-white"
+              onClick={handleToggleMobileSearch}
+              aria-label={isMobileSearchOpen ? 'Close search' : 'Open search'}
+            >
+              <Search className="h-5 w-5" style={{ color: '#ED500D' }} />
+            </Button>
 
             <Button
               onClick={onManageReadingLists}
@@ -49,6 +75,33 @@ export default function Navbar({ searchQuery, onSearchChange, onAddBook, onManag
             </Button>
           </div>
         </div>
+
+        {isMobileSearchOpen && (
+          <div className="sm:hidden mt-3">
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleMobileSearchChange(e.target.value)}
+                  placeholder="Search by title or author..."
+                  className="pl-9 bg-white"
+                  autoFocus
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleCloseMobileSearch}
+                aria-label="Close search"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   )
