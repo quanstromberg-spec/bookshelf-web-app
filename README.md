@@ -43,6 +43,26 @@ A modern, responsive React application for managing your personal book library. 
 - `npm run preview` - Preview the production build locally
 - `npm run lint` - Run ESLint to check for code issues
 
+## ☁️ Deploying to Vercel
+
+1. **Push your code to GitHub.** This repository is already configured for Vite, so no extra build files are required.
+2. **Create a Vercel project.**
+   - Sign in at [vercel.com](https://vercel.com) with your GitHub account.
+   - Click *Add New → Project* and import this repository.
+   - Accept the detected defaults (`npm run build` as the build command, `dist` as the output directory).
+3. **Configure environment variables.** In the Vercel project dashboard open *Settings → Environment Variables* and add:
+   - `VITE_SUPABASE_URL` — your Supabase project URL (for example `https://xyz.supabase.co`).
+   - `VITE_SUPABASE_ANON_KEY` — the publishable anon key you generated in Supabase.
+   Set the scope to **Production** (and optionally *Preview*/*Development* if you want the same values there).
+4. **Deploy.** Click *Deploy* (or *Redeploy* after editing env vars). Vercel will install dependencies, run `npm run build`, and host the contents of `dist/`.
+5. **Verify.** When the build finishes, open the generated `https://<project>.vercel.app` URL and test:
+   - Books load from Supabase.
+   - Adding a book (with optional reading lists) succeeds.
+   - Reading list management works end to end.
+6. **Future updates.** Every push to `main` triggers an automatic redeploy. If you rotate Supabase keys, update the same environment variables in Vercel and redeploy.
+
+> Tip: copy `.env.example` to `.env.local`, populate it with your Supabase values locally, and keep `.env.local` out of version control.
+
 ## 📋 How to Use
 
 ### Adding a Book
